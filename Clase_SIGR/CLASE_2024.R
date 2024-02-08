@@ -80,15 +80,24 @@ cat(sum(a$n),"\n")
 a <- babynames[which(babynames$name==nombres[5]),]
 cat(sum(a$n),"\n")
 
-nombres <- unique(babynames$name)
+nombres <- unique(babynames$name)[1:1000]
 # iterando sobre i
 #i <- 1
+conteos <- c()
 for(i in 1:length(nombres)){
 a <- babynames[which(babynames$name==nombres[i]),]
-cat(i, nombres[i],":",sum(a$n),"\n")
+cat(i,"\r")
+conteos[i] <- sum(a$n)
 #plot(a$year,a$n,type="l",main=nombres[i])
 }
-babynames %>% count(name)
+conteos
+esto <- data.frame(nombres,conteos)
+esto[order(esto$conteos,decreasing = TRUE),]
+which.max(esto$conteos)
+which.min(esto$conteos)
+
+# la familia apli
+apply
 
 
 ### DATOS DE GBIF EN R ####
@@ -99,6 +108,7 @@ summary(data)
 ### VAMOS A REDUCIR UN POCO EL RUIDO: species, lat, lon, year, country
 colnames(data)
 data[13]
+data[[13]]
 data[13,]
 data[,13]
 data[,"scientificName"]
@@ -111,23 +121,31 @@ data[1:2]
 data[[1:2]] 
 data[[c(2,5)]] ## RECURSIVE INDEXING!!
 
-#install.packages("maps")
-maps::map("world",lwd=0.1)
+# install.packages("maps")
+maps::map("world",lwd=0.1,xlim = c(-120,-81),ylim=c(5,34))
 points(data$decimalLongitude,data$decimalLatitude,pch=19)
 
 
+abline(v = -81)
+abline(h = 32)
+summary(data)
 data <- data[-which(is.na(data$decimalLatitude)),]
 data <- data[-which(is.na(data$year)),]
-head(data)
-summary(data)
+data <- data[which(data$year > 1980),]
+data <- data[which(data$year < 2010),]
+
+data <- data[which(data$decimalLongitude < -81),  ]
+data <- data[which(data$decimalLatitude < 32),  ]
+duplicated(data$decimalLatitude,data$decimalLongitude)
+
+
 
 
 unvector <- rnbinom(n=36*18, size=10, prob=0.1)
-ras <- raster::raster(nrows=18, ncols=36, xmn=-180, xmx=180, ymn=-90, ymx=90,vals=unvector)
+ras <- raster::raster(nrows=360, ncols=180, xmn=-180, xmx=180, ymn=-90, ymx=90,vals=unvector)
+raster::plot(ras+ras,col=heat.colors(100))
 ras@data@values
 ras[1:2]
-ras < 100
-raster::plot(ras < 100,col=heat.colors(100))
 
 
 
